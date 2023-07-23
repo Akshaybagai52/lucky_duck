@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios'
 
 import "./Wallet.scss";
 
@@ -13,6 +14,7 @@ import { CUSelect2 } from "../common/common.js";
 import RegisterPools from "../modals/RegisterPools.js";
 import { get } from "../../redux/reducer/pools.reducer";
 
+
 // import image1 from "../assets/image/cards/image1.svg";
 // import image1 from "/assets/image/cards/image1.svg";
 
@@ -21,11 +23,45 @@ const Wallet = () => {
   const poolData = useSelector((state) => state.pool);
   const [pools, setPools] = useState();
   const [show, setShow] = useState(false);
+  const [myData, setMyData] = useState([]);
 
   useEffect(() => {
     const dt = poolData.filter((el) => el.status === 0);
     setPools(dt);
   }, [poolData]);
+
+  useEffect(() => {
+    // Define an async function to fetch data from the API using Axios
+    async function fetchData() {
+      try {
+        const response = await axios.get('http://localhost:5000/api/products');
+        setMyData(response.data.myData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+  console.log(myData)
+
+    }
+
+    // Call the async function immediately
+    fetchData();
+  }, []);
+
+  
+  // const fetchPoolData = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:5000/api/products');
+  //     console.log(response.data)
+  //     return response.data;
+  //   } catch (error) {
+  //     throw new Error('Error fetching pool data');
+  //   }
+  // };
+  // const poolDatas = fetchPoolData() 
+
+
+  // console.log(poolDatas)
+
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -92,11 +128,18 @@ const Wallet = () => {
               <Tab.Pane eventKey="first">
                 {pools &&
                   pools.map((el, idx) => (
+                    
                     <ImageCard
                       key={el.id}
                       src={el.img ? el.img : "/assets/image/cards/default.svg"}
                       poolData={el}
+                      myData={myData}
                     />
+                    /* <ImageCard
+                      key={el.id}
+                      src={el.img ? el.img : "/assets/image/cards/default.svg"}
+                      poolData={el}
+                    /> */
                   ))}
               </Tab.Pane>
             </Tab.Content>
